@@ -1,16 +1,33 @@
-export function ReChartLegend({ payload, chartData }: any) {
+import type { LegendPayload } from "recharts";
+
+interface ChartDataItem {
+  name: string;
+  value: number;
+  color: string;
+}
+
+interface ReChartLegendProps {
+  payload?: readonly LegendPayload[];
+  chartData: ChartDataItem[];
+}
+
+export function ReChartLegend({ payload, chartData }: ReChartLegendProps) {
   return (
     <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        flexWrap: "wrap",
-      }}
+      style={{ display: "flex", justifyContent: "center", flexWrap: "wrap" }}
     >
-      {payload?.map((entry: any, index: number) => {
+      {payload?.map((entry, index) => {
+        const name =
+          entry.payload &&
+          typeof entry.payload === "object" &&
+          "name" in entry.payload
+            ? (entry.payload.name as string) // här säger vi till TS att det är en string
+            : "Unknown";
+
         const color =
-          chartData.find((d) => d.name === entry.payload.name)?.color ??
+          chartData.find((d) => d.name === name)?.color ??
           "rgba(255,255,255,1)";
+
         return (
           <div
             key={index}
@@ -32,7 +49,7 @@ export function ReChartLegend({ payload, chartData }: any) {
                 marginRight: 6,
               }}
             />
-            {entry.payload.name}
+            {name} {/* nu är TypeScript nöjd */}
           </div>
         );
       })}
